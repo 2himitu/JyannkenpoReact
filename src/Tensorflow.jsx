@@ -62,30 +62,14 @@ const TeachableMachineComponent = () => {
   const predict = async () => {
     if (model && webcam && labelContainer) {
       const prediction = await model.predict(webcam.canvas);
-      for (let i = 0; i < maxPredictions; i++) {
-        if (labelContainer.childNodes[i]) {
-          const className = prediction[i].className;
-          const probability = prediction[i].probability.toFixed(2);
-
-          // 각 클래스와 해당 확률을 변수로 지정
-          const classPrediction = {
-            className: className,
-            probability: probability,
-          };
-
-          // 변수로 지정된 값을 사용하여 원하는 작업 수행
-          console.log(classPrediction.className);
-          console.log(classPrediction.probability);
-
-          // 또는 필요에 따라 변수로 저장
-          // const { className, probability } = classPrediction;
-          // console.log(className);
-          // console.log(probability);
-
-          labelContainer.childNodes[
-            i
-          ].innerHTML = `${className}: ${probability}`;
-        }
+      if (prediction[0].probability.toFixed(2) >= 0.7) {
+        labelContainer.childNodes[0].innerHTML = "가위";
+      } else if (prediction[1].probability.toFixed(2) >= 0.7) {
+        labelContainer.childNodes[0].innerHTML = "바위";
+      } else if (prediction[2].probability.toFixed(2) >= 0.7) {
+        labelContainer.childNodes[0].innerHTML = "보";
+      } else {
+        labelContainer.childNodes[0].innerHTML = "다시";
       }
     }
   };
