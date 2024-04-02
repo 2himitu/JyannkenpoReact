@@ -8,10 +8,33 @@ const TeachableMachineComponent = () => {
   const [labelContainer, setLabelContainer] = useState(null);
   const [maxPredictions, setMaxPredictions] = useState(0);
   const [open, setOpen] = useState(false);
-
+  const [count, setCount] = useState(3);
+  const [isActive, setIsActive] = useState(false);
+  
   const toggleModal = () => {
     setOpen(!open);
+    setTimeout(() => {setOpen(false)}, 3000);
+    if (isActive) {
+      return;
+    }
+    setCount(3); // 타이머를 3초로 재설정
+    setIsActive(true); // 타이머를 활성화
   };
+
+  useEffect(() => {
+    if (!isActive || count === 0) return;
+    const interval = setInterval(() => {
+      setCount((prevCount) => prevCount - 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isActive, count]);
+
+  useEffect(() => {
+    if (count === 0) {
+      setIsActive(false);
+    }
+  }, [count]);
+
   useEffect(() => {
     const init = async () => {
       const modelURL = URL + "model.json";
@@ -83,7 +106,7 @@ const TeachableMachineComponent = () => {
   return (
     <div>
       <div>Teachable Machine Image Model</div>
-      <button type="button" onClick={toggleModal}>
+      <button type="button" onClick={toggleModal} disabled={isActive}>
         Start
       </button>
       <div id="webcam-container">
@@ -94,6 +117,14 @@ const TeachableMachineComponent = () => {
             height={200}
           />
         )}
+      </div>
+      <div>
+        {isActive ? (
+          <p>{count} 가위바위보!</p>
+          ) : (
+          <div id="label-container"></div>
+          )
+        }
       </div>
       <div id="label-container"></div>
     </div>
